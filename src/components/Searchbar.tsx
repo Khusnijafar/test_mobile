@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, TextInput, Image, StyleSheet} from 'react-native';
 
-const Searchbar = () => {
+const Searchbar: React.FC = () => {
   return (
     <View style={styles.searchBoxWrapper}>
       <TextInput placeholder="Search Course" style={styles.input} />

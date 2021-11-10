@@ -1,13 +1,20 @@
 import React from 'react';
 import {View, TouchableOpacity, StyleSheet, Text, Image} from 'react-native';
 
+export type Props = {
+  label: string;
+  onPress: () => void;
+};
 
-const Header = ({label, onPress}) => {
+const Header: React.FC<Props> = ({label, onPress}) => {
   return (
     <View style={styles.headerView}>
       <TouchableOpacity onPress={onPress}>
         <View style={styles.containView}>
-          <Image source={require('../../assets/back-button.png')} style={{ height: 40, width: 40, marginTop: 6}}/>
+          <Image
+            source={require('../../assets/back-button.png')}
+            style={{height: 40, width: 40, marginTop: 6}}
+          />
           <Text style={styles.textLabel}>{label}</Text>
         </View>
       </TouchableOpacity>
@@ -29,7 +36,7 @@ const styles = StyleSheet.create({
   },
   textLabel: {
     fontSize: 24,
-    fontWeight: "600",
+    fontWeight: '600',
     alignSelf: 'center',
     color: '#3C3A36',
     marginLeft: 112,

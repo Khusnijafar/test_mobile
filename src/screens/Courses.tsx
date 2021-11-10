@@ -19,7 +19,11 @@ var adLoadState = {
   loaded: 'LOADED',
 };
 
-const CoursesScreen = ({navigation}) => {
+export type Props = {
+  navigation: any;
+};
+
+const CoursesScreen: React.FC<Props> = ({navigation}) => {
   const SDK_KEY =
     'nLBV8ZmQQ1WNG_qIIqHAU3xEGNZI8aJKHlU3c1t7e9dni2DnDo8BDCzGpn4eiaqOMyv3fRBs3ZoizSRD23UQwo';
 
@@ -83,75 +87,84 @@ const CoursesScreen = ({navigation}) => {
 
   function attachAdListeners() {
     // Interstitial Listeners
-    AppLovinMAX.addEventListener('OnInterstitialLoadedEvent', adInfo => {
-      setInterstitialAdLoadState(adLoadState.loaded);
-
-      // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
-      logStatus('Interstitial ad loaded from ' + adInfo.networkName);
-
-      // Reset retry attempt
-      setInterstitialRetryAttempt(0);
-    });
-    AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', errorInfo => {
-      // Interstitial ad failed to load
-      // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
-      setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
-
-      var retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
-      logStatus(
-        'Interstitial ad failed to load with code ' +
-          errorInfo.code +
-          ' - retrying in ' +
-          retryDelay +
-          's',
-      );
-
-      setTimeout(function () {
-        AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
-      }, retryDelay * 1000);
-    });
-    AppLovinMAX.addEventListener('OnInterstitialClickedEvent', adInfo => {
-      logStatus('Interstitial ad clicked');
-    });
-    AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', adInfo => {
-      logStatus('Interstitial ad displayed');
-    });
     AppLovinMAX.addEventListener(
-      'OnInterstitialAdFailedToDisplayEvent',
-      adInfo => {
-        setInterstitialAdLoadState(adLoadState.notLoaded);
-        logStatus('Interstitial ad failed to display');
+      'OnInterstitialLoadedEvent',
+      (adInfo: {networkName: string}) => {
+        setInterstitialAdLoadState(adLoadState.loaded);
+
+        // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
+        logStatus('Interstitial ad loaded from ' + adInfo.networkName);
+
+        // Reset retry attempt
+        setInterstitialRetryAttempt(0);
       },
     );
-    AppLovinMAX.addEventListener('OnInterstitialHiddenEvent', adInfo => {
+    AppLovinMAX.addEventListener(
+      'OnInterstitialLoadFailedEvent',
+      (errorInfo: {code: string}) => {
+        // Interstitial ad failed to load
+        // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
+        setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
+
+        var retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
+        logStatus(
+          'Interstitial ad failed to load with code ' +
+            errorInfo.code +
+            ' - retrying in ' +
+            retryDelay +
+            's',
+        );
+
+        setTimeout(function () {
+          AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
+        }, retryDelay * 1000);
+      },
+    );
+    AppLovinMAX.addEventListener('OnInterstitialClickedEvent', () => {
+      logStatus('Interstitial ad clicked');
+    });
+    AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', () => {
+      logStatus('Interstitial ad displayed');
+    });
+    AppLovinMAX.addEventListener('OnInterstitialAdFailedToDisplayEvent', () => {
+      setInterstitialAdLoadState(adLoadState.notLoaded);
+      logStatus('Interstitial ad failed to display');
+    });
+    AppLovinMAX.addEventListener('OnInterstitialHiddenEvent', () => {
       setInterstitialAdLoadState(adLoadState.notLoaded);
       logStatus('Interstitial ad hidden');
     });
 
     // Banner Ad Listeners
-    AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', adInfo => {
-      logStatus('Banner ad loaded from ' + adInfo.networkName);
-    });
-    AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', errorInfo => {
-      logStatus(
-        'Banner ad failed to load with error code ' +
-          errorInfo.code +
-          ' and message: ' +
-          errorInfo.message,
-      );
-    });
-    AppLovinMAX.addEventListener('OnBannerAdClickedEvent', adInfo => {
+    AppLovinMAX.addEventListener(
+      'OnBannerAdLoadedEvent',
+      (adInfo: {networkName: string}) => {
+        logStatus('Banner ad loaded from ' + adInfo.networkName);
+      },
+    );
+    AppLovinMAX.addEventListener(
+      'OnBannerAdLoadFailedEvent',
+      (errorInfo: {code: string; message: string}) => {
+        logStatus(
+          'Banner ad failed to load with error code ' +
+            errorInfo.code +
+            ' and message: ' +
+            errorInfo.message,
+        );
+      },
+    );
+    AppLovinMAX.addEventListener('OnBannerAdClickedEvent', () => {
       logStatus('Banner ad clicked');
     });
-    AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', adInfo => {
+    AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', () => {
       logStatus('Banner ad expanded');
     });
-    AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', adInfo => {
+    AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', () => {
       logStatus('Banner ad collapsed');
     });
   }
 
-  function logStatus(status) {
+  function logStatus(status: string) {
     console.log(status);
     setStatusText(status);
   }
